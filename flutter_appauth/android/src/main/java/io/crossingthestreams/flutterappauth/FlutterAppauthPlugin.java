@@ -325,6 +325,8 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
             authRequestBuilder.setNonce(nonce);
         }
 
+        authRequestBuilder.setState(null);
+
         if (additionalParameters != null && !additionalParameters.isEmpty()) {
 
             if(additionalParameters.containsKey("ui_locales")){

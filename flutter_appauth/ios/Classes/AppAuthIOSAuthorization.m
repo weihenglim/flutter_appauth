@@ -13,7 +13,7 @@
                                                    scope:[OIDScopeUtilities scopesWithArray:scopes]
                                              redirectURL:[NSURL URLWithString:redirectUrl]
                                             responseType:OIDResponseTypeCode
-                                                   state:[OIDAuthorizationRequest generateState]
+                                                   state:nil
                                                    nonce: nonce != nil ? nonce : [OIDAuthorizationRequest generateState]
                                             codeVerifier:codeVerifier
                                            codeChallenge:codeChallenge
