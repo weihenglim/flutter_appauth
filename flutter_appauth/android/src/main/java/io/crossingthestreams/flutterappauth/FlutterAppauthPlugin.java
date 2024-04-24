@@ -1,6 +1,7 @@
 package io.crossingthestreams.flutterappauth;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -56,6 +57,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
     private static final String END_SESSION_ERROR_CODE = "end_session_failed";
     private static final String NULL_INTENT_ERROR_CODE = "null_intent";
     private static final String INVALID_CLAIMS_ERROR_CODE = "invalid_claims";
+    private static final String NO_BROWSER_AVAILABLE_ERROR_CODE = "no_browser_available";
 
     private static final String DISCOVERY_ERROR_MESSAGE_FORMAT = "Error retrieving discovery document: [error: %s, description: %s]";
     private static final String TOKEN_ERROR_MESSAGE_FORMAT = "Failed to get token: [error: %s, description: %s]";
@@ -63,6 +65,7 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
     private static final String END_SESSION_ERROR_MESSAGE_FORMAT = "Failed to end session: [error: %s, description: %s]";
 
     private static final String NULL_INTENT_ERROR_FORMAT = "Failed to authorize: Null intent received";
+    private static final String NO_BROWSER_AVAILABLE_ERROR_FORMAT = "Failed to authorize: No suitable browser is available";
 
     private final int RC_AUTH_EXCHANGE_CODE = 65030;
     private final int RC_AUTH = 65031;
@@ -350,8 +353,13 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
         }
 
         AuthorizationService authorizationService = allowInsecureConnections ? insecureAuthorizationService : defaultAuthorizationService;
-        Intent authIntent = authorizationService.getAuthorizationRequestIntent(authRequestBuilder.build());
-        mainActivity.startActivityForResult(authIntent, exchangeCode ? RC_AUTH_EXCHANGE_CODE : RC_AUTH);
+
+        try {
+            Intent authIntent = authorizationService.getAuthorizationRequestIntent(authRequestBuilder.build());
+            mainActivity.startActivityForResult(authIntent, exchangeCode ? RC_AUTH_EXCHANGE_CODE : RC_AUTH);
+        } catch (ActivityNotFoundException ex) {
+            finishWithError(NO_BROWSER_AVAILABLE_ERROR_CODE, NO_BROWSER_AVAILABLE_ERROR_FORMAT, getCauseFromException(ex));
+        }
     }
 
     private void performTokenRequest(AuthorizationServiceConfiguration serviceConfiguration, TokenRequestParameters tokenRequestParameters) {
@@ -495,15 +503,20 @@ public class FlutterAppauthPlugin implements FlutterPlugin, MethodCallHandler, P
             return true;
         }
         if (requestCode == RC_END_SESSION) {
-            final EndSessionResponse endSessionResponse = EndSessionResponse.fromIntent(intent);
-            AuthorizationException ex = AuthorizationException.fromIntent(intent);
-            if (ex != null) {
-                finishWithEndSessionError(ex);
+            if (intent == null) {
+                finishWithError(NULL_INTENT_ERROR_CODE, NULL_INTENT_ERROR_FORMAT, null);
             } else {
-                Map<String, Object> responseMap = new HashMap<>();
-                responseMap.put("state", endSessionResponse.state);
-                finishWithSuccess(responseMap);
+                final EndSessionResponse endSessionResponse = EndSessionResponse.fromIntent(intent);
+                AuthorizationException ex = AuthorizationException.fromIntent(intent);
+                if (ex != null) {
+                    finishWithEndSessionError(ex);
+                } else {
+                    Map<String, Object> responseMap = new HashMap<>();
+                    responseMap.put("state", endSessionResponse.state);
+                    finishWithSuccess(responseMap);
+                }
             }
+            return true;
         }
         return false;
     }

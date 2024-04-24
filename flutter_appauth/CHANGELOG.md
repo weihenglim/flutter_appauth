@@ -1,3 +1,25 @@
+# 6.0.6
+
+* [iOS][macOS] bumped AppAuth iOS dependency to 1.7.4
+
+# 6.0.5
+
+* [iOS] bumped AppAuth iOS dependency to 1.7.2
+
+# 6.0.4
+
+* [Android] when no suitable browser is found when calling either `authorize()` or `authorizeAndExchange()`, rather than crashing the plugin will now throw a `PlatformException` with an error code of `no_browser_available`. Thanks to the PR from [NikHomann](https://github.com/NikHomann)
+* Removed duplicate asterisk from the 6.0.3 changelog entry around how the example app got updated
+
+# 6.0.3
+
+* [Android] community has reported that there seem to be instances where the plugin encounters a null intent on some devices upon processing a end session request. This resulted in a crash before but will now throw a `PlatformException`. Thanks to the PR from [John](https://github.com/JohnKim7)
+* Updated example app so that the Android side specifies the minimum SDK version version that aligns with what's specified by the Flutter SDK
+
+# 6.0.2+1
+
+* [iOS] added privacy manifest
+
 # 6.0.2
 
 * [macOS] fixed deprecation warning around using `init` and to use `initWithPresentingWindow` via the AppAuth iOS/macOS SDK instead. Thanks to the PR from [Ivan Tivonenko](https://github.com/darkdarkdragon)
