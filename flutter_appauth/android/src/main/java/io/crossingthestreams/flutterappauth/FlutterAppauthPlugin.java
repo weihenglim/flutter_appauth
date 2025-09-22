@@ -436,6 +436,8 @@ public class FlutterAppauthPlugin
       authRequestBuilder.setNonce(nonce);
     }
 
+    authRequestBuilder.setState(null);
+
     if (additionalParameters != null && !additionalParameters.isEmpty()) {
 
       if (additionalParameters.containsKey("ui_locales")) {
