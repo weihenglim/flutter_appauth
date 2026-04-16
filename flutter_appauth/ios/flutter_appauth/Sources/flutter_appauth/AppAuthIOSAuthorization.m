@@ -24,7 +24,9 @@
                       scope:[OIDScopeUtilities scopesWithArray:scopes]
                 redirectURL:[NSURL URLWithString:redirectUrl]
                responseType:OIDResponseTypeCode
-                      state:nil
+                      state:nonce != nil
+                                ? nonce
+                                : [OIDAuthorizationRequest generateState]
                       nonce:nonce != nil
                                 ? nonce
                                 : [OIDAuthorizationRequest generateState]

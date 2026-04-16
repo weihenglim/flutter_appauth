@@ -436,7 +436,7 @@ public class FlutterAppauthPlugin
       authRequestBuilder.setNonce(nonce);
     }
 
-    authRequestBuilder.setState(null);
+    authRequestBuilder.setState(nonce);
 
     if (additionalParameters != null && !additionalParameters.isEmpty()) {
 
